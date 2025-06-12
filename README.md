@@ -15,6 +15,9 @@ import { CustomPagesPlugin } from './src/next-style-pages-plugin'
 
 export default defineConfig({
   plugins: [CustomPagesPlugin(), react()],
+  define: {
+    'process.env': process.env,
+  },
 })
 ```
 

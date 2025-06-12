@@ -5,4 +5,7 @@ import { CustomPagesPlugin } from './src/next-style-pages-plugin'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [CustomPagesPlugin(), react()],
+  define: {
+    'process.env': process.env,
+  },
 })
