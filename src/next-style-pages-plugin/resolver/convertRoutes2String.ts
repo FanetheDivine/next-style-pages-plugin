@@ -4,7 +4,7 @@ import type { Route } from './getRoutesFromFileStructure'
 /** 字符串路由的结构 */
 export type RouteMap = {
   path: string
-  components?: { key: string; value: ComponentType }[]
+  components: { key: string; value: ComponentType<any> | null }[]
   children?: RouteMap
 }[]
 
@@ -78,12 +78,15 @@ function convertRouteComponent(route: Route, routeImports: RouteImports) {
   })()
   const mode = getImportMode(route)
   const components = componentKeys
-    .map((key) => ({ key, filePath: route.components.get(key)! }))
+    .map((key) => ({ key, filePath: route.components.get(key) }))
     .filter((item) => item.filePath)
-    .map(
-      (item) =>
-        `{key:'${item.key}',value: ${convertImportCode(mode, item.filePath, routeImports)}}`,
-    )
+    .map((item) => {
+      // 所有可选组件都展示出来 缺失的用null填补
+      const value = item.filePath
+        ? convertImportCode(mode, item.filePath, routeImports)
+        : 'undefined'
+      return `{key:'${item.key}',value: ${value}}`
+    })
   if (components.length === 0) return null
   return `components:[${components.join(',')}]`
 }

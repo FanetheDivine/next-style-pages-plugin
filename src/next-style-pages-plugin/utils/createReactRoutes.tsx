@@ -1,4 +1,4 @@
-import { ComponentType, Suspense } from 'react'
+import { ComponentType, ReactNode, Suspense } from 'react'
 import { Outlet, RouteObject } from 'react-router'
 import { ErrorBoundary } from 'react-error-boundary'
 import type { RouteMap } from '..'
@@ -14,11 +14,19 @@ import type { RouteMap } from '..'
  * createRoot(document.getElementById('root')!).render(<BrowserRouter><App /></BrowserRouter>)
  * ```
  */
-export function createReactRoutes(routeMap: RouteMap): RouteObject[] {
+export function createReactRoutes(
+  routeMap: RouteMap,
+  defaultError?: ReactNode,
+  defaultLoading?: ReactNode,
+): RouteObject[] {
   function convertRouteMap(routeMap?: RouteMap): RouteObject[] | undefined {
     if (!routeMap || routeMap.length === 0) return undefined
     const res: RouteObject[] = routeMap.map(function (item): RouteObject {
-      const Component = createComboComp(item.components)
+      const Component = createComboComp(
+        item.components,
+        defaultError,
+        defaultLoading,
+      )
       const element = Component ? (
         <Component>
           <Outlet></Outlet>
@@ -58,26 +66,41 @@ export function createReactRoutes(routeMap: RouteMap): RouteObject[] {
  * 对于key为error的组件 使用ErrorBoundary
  */
 function createComboComp(
-  comps?: { key: string; value: ComponentType<any> }[],
+  comps?: RouteMap[number]['components'],
+  defaultError?: ReactNode,
+  defaultLoading?: ReactNode,
 ): ComponentType<any> | null {
   if (!comps || comps.length === 0) return null
 
-  let ResultComp: ComponentType<any>
+  let ResultComp: ComponentType<any> | null = null
   comps.forEach((item) => {
-    let CurrentComp: ComponentType<any>
+    let CurrentComp: ComponentType<any> | null = null
     if (item.key === 'error') {
-      const _Comp = item.value
-      CurrentComp = (props) => (
-        <ErrorBoundary fallback={<_Comp />}>{props.children}</ErrorBoundary>
-      )
+      let fallback: ReactNode | undefined = defaultError
+      if (item.value) {
+        const _Comp = item.value
+        fallback = <_Comp />
+      }
+      if (fallback) {
+        CurrentComp = (props) => (
+          <ErrorBoundary fallback={fallback}>{props.children}</ErrorBoundary>
+        )
+      }
     } else if (item.key === 'loading') {
-      const _Comp = item.value
-      CurrentComp = (props) => (
-        <Suspense fallback={<_Comp />}>{props.children}</Suspense>
-      )
+      let fallback: ReactNode | undefined = defaultLoading
+      if (item.value) {
+        const _Comp = item.value
+        fallback = <_Comp />
+      }
+      if (fallback) {
+        CurrentComp = (props) => (
+          <Suspense fallback={fallback}>{props.children}</Suspense>
+        )
+      }
     } else {
       CurrentComp = item.value
     }
+    if (!CurrentComp) return
     if (ResultComp) {
       const TempComp = ResultComp
       ResultComp = (props) => (
@@ -89,5 +112,5 @@ function createComboComp(
       ResultComp = CurrentComp
     }
   })
-  return ResultComp!
+  return ResultComp
 }
