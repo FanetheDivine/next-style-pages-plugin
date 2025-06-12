@@ -1,7 +1,13 @@
 # next-style-pages-plugin
 
 基于文件路径的路由  
-在指定文件夹内构建文件结构 将文件名为`page`, `404`, `loading`, `error`, `layout`的文件按照next.js的风格组合为路由
+在指定文件夹内构建文件结构 将文件名为`page`, `404`, `loading`, `error`, `layout`的文件按照next.js的风格组合为路由  
+仅文件夹名表示路由名 文件名仅以上五项被收集
+
+- /a->/a 静态路由
+- /[a]->/:d 动态参数
+- /[...]->/\*剩余参数
+- /(withAuth)/a->/a 忽略路由
 
 ## 使用例
 
