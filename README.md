@@ -5,7 +5,7 @@
 
 ## 使用例
 
-将`src/next-style-pages-plugin`复制在项目中
+将`src/next-style-pages-plugin`复制在项目中并安装依赖`vite-plugin-pages`
 
 ```ts
 // vite.config.ts
@@ -85,6 +85,11 @@ type CustomPagesPluginOptions = {
 ```
 
 ## 实用工具
+
+### createReactRoutes
+
+生成react-router的路由  
+需要安装`react-error-boundary` `react-router`
 
 ```ts
 const createReactRoutes:(routeMap:RouteMap) => RouterObject[]
