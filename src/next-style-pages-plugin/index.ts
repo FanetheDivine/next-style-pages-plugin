@@ -9,7 +9,7 @@ export { createReactRoutes } from './utils/createReactRoutes'
 /** 可被解析为路由的文件名 */
 const legalFileNames = ['page', '404', 'loading', 'error', 'layout']
 
-export type CustomPagesPluginOptions = {
+export type PagesPluginOptions = {
   /**
    * 从这个路径获取文件结构解析结果
    * @example '~react-pages'
@@ -31,7 +31,7 @@ export type CustomPagesPluginOptions = {
    */
   lazyImport?: string
 }
-export function CustomPagesPlugin(options: CustomPagesPluginOptions = {}) {
+export default function PagesPlugin(options: PagesPluginOptions = {}) {
   const {
     module = '~pages',
     pageSrc = '/src/pages',
